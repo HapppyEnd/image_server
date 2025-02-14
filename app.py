@@ -26,27 +26,33 @@ logging.basicConfig(
     handlers=[logging.FileHandler(log_file), logging.StreamHandler()]
 )
 
+routes = web.RouteTableDef()
 
-async def handle_get(request: web.Request):
+
+@routes.get('/')
+async def get_handler(request: web.Request):
     """Обрабатывает GET-запросы."""
-    if request.path == '/':
-        return web.Response(status=200,
-                            text='Welcome to the Image Hosting Service!',
-                            content_type='text/html')
 
-    elif request.path.startswith('/images/'):
-        return web.Response(status=404, text='Not Found URL BACKEND')
-    else:
-        logging.error(f'Invalid path: {request.path}')
-        return web.Response(status=404, text='Invalid URL')
+    return web.Response(status=200,
+                        text='Welcome to the Image Hosting Service!',
+                        content_type='text/html')
 
 
-async def handle_upload(request: web.Request) -> web.Response:
+@routes.get('/images/{tail:.*}')
+async def image_handler(request: web.Request):
+    logging.error(f'Invalid path: {request.path}')
+    return web.Response(status=404, text='Not Found URL for BACKEND')
+
+
+@routes.route('*', '/{tail:.*}')
+async def incorrect_url_handler(request: web.Request):
+    logging.error(f'Invalid path: {request.path}')
+    return web.Response(status=404, text='Invalid URL')
+
+
+@routes.post('/upload')
+async def post_handler(request: web.Request) -> web.Response:
     """Обрабатывает загрузку изображения."""
-    if request.path != '/upload':
-        logging.error(f'Invalid path: {request.path}')
-        return web.Response(status=404, text='Invalid path')
-
     try:
         reader = await request.multipart()
         field = await reader.next()
@@ -100,9 +106,7 @@ async def handle_upload(request: web.Request) -> web.Response:
 async def init_app() -> web.Application:
     """Инициализирует приложение."""
     app = web.Application()
-    app.router.add_get('/', handle_get)
-    app.router.add_get('/images/{tail:.*}', handle_get)
-    app.router.add_post('/upload', handle_upload)
+    app.add_routes(routes)
     return app
 
 
