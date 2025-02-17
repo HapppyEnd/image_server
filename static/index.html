@@ -3,9 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Загрузка изображения</title>
+    <title>Главная</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container-nav {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #be1b86, #2b306c);
+        }
+        .nav-bar {
+            margin: 0 auto;
+            width: 80vw;
+            padding-top: 30px;
+            color: white;
+        }
+        a {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            margin-right: 16px;
+        }
+        main {
+            width: 100%;
+            height: calc(100vh - 80px - 80px);
+            background: linear-gradient(90deg, #be1b86, #2b306c);
+        }
+        .header-text {
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 30px;
+            padding-top: 10vh;
+        }
+        .centred {
+            text-align: center;
+        }
+        .tt {
+            padding-top: 10vh;
+        }
+    </style>
 </head>
 <body>
-    <a href="/images/images.html">Img</a>
+    <header class="container-nav">
+        <div class="nav-bar">
+            <a href="/">Главная</a>
+            <a href="/images">Галерея</a>
+            <a href="/upload">Загрузить изображение</a>
+        </div>
+    </header>
+<main>
+<div class="nav-bar tt">
+    <h1>Добро пожаловать на Image Hosting</h1>
+    <p class="header-text">Здесь вы можете легко загружать, хранить и управлять своими изображениями. Наша платформа предоставляет удобный интерфейс для загрузки фотографий, а также возможность скачивания их в любое время. Делитесь своими воспоминаниями, создавайте альбомы и наслаждайтесь безопасным хранением ваших любимых моментов. Начните прямо сейчас – загрузите свое первое изображение!</p>
+</div>
+</main>
+
+ <footer class="container-nav">
+        <div class="nav-bar centred">
+            @happpyend 2025г.
+        </div>
+    </footer>
+
+
 </body>
 </html>

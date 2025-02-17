@@ -9,7 +9,7 @@ from PIL import Image
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
 IMAGES_DIR = 'images'
-BASE_URL = 'http://127.0.0.1:80'
+BASE_URL = 'http://localhost'
 MAX_FILE_SIZE = 5 * 1024 * 1024
 
 os.makedirs(IMAGES_DIR, exist_ok=True)
@@ -27,9 +27,11 @@ routes = web.RouteTableDef()
 async def get_handler(request: web.Request) -> web.Response:
     """Обрабатывает GET-запросы на главную страницу."""
     logger.info(f'GET: {request.path}')
+    with open(os.path.join('static', 'index.html'), encoding='utf-8') as file:
+        html_content = file.read()
     return web.Response(
         status=200,
-        text='Welcome to Image Server!',
+        text=html_content,
         content_type='text/html'
     )
 
@@ -97,7 +99,7 @@ async def create_upload_response(filename: str) -> web.Response:
     """Формирует JSON-ответ об успешной загрузке файла."""
     response = {
         'message': 'File uploaded successfully',
-        'file_url': f'{IMAGES_DIR}/{filename}'
+        'file_url': f'{BASE_URL}/{IMAGES_DIR}/{filename}'
     }
     return web.Response(
         status=201,
