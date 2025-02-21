@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 from io import BytesIO
+from os.path import isfile
 
 from aiohttp import web
 from loguru import logger
@@ -24,7 +25,7 @@ routes = web.RouteTableDef()
 
 
 @routes.get('/')
-async def get_handler(request: web.Request) -> web.Response:
+async def get_main(request: web.Request) -> web.Response:
     """Обрабатывает GET-запросы на главную страницу."""
     logger.info(f'GET: {request.path}')
     with open(os.path.join('static', 'index.html'), encoding='utf-8') as file:
@@ -34,13 +35,6 @@ async def get_handler(request: web.Request) -> web.Response:
         text=html_content,
         content_type='text/html'
     )
-
-
-@routes.get('/images/{tail:.*}')
-async def image_handler(request: web.Request) -> web.Response:
-    """Обрабатывает запросы к /images/."""
-    logger.error(f'Invalid path: {request.path}')
-    return web.Response(status=404, text='Not Found URL for BACKEND')
 
 
 @routes.route('*', '/{tail:.*}')
@@ -106,6 +100,31 @@ async def create_upload_response(filename: str) -> web.Response:
         text=json.dumps(response),
         content_type='application/json'
     )
+
+
+@routes.get('/api/images')
+async def get_all_images(request: web.Request) -> web.Response:
+    logger.info(f'GET: {request.path}')
+    images = [file for file in os.listdir(IMAGES_DIR) if
+              isfile(os.path.join(IMAGES_DIR, file))]
+    logger.info(f'Images found: {images}')
+    print(images)
+    return web.Response(status=200, text=json.dumps({'images': images}),
+                        content_type='application/json')
+
+
+@routes.get('/images')
+async def images_gallery_handler(request: web.Request) -> web.Response:
+    """Отдает HTML-страницу с галереей изображений."""
+    try:
+        with open(os.path.join('static', 'images.html'), 'r',
+                  encoding='utf-8') as file:
+            html_content = file.read()
+            logger.info(f'GET {request.path}')
+        return web.Response(text=html_content, content_type='text/html')
+    except Exception as e:
+        logger.error(f'Error loading images gallery: {e}')
+        return web.Response(status=500, text='Internal Server Error')
 
 
 @routes.get('/upload')

@@ -3,10 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image hosting</title>
+    <title>Image Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .gallery img {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .gallery img:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </head>
 <body>
-    <h1>изображения</h1>
+<h1>Image Gallery</h1>
+<div class="gallery" id="gallery">
+    <!-- Изображения будут добавлены сюда -->
+</div>
 
+<script>
+
+    const gallery = document.getElementById('gallery');
+
+    // Получаем список изображений из папки /images
+    fetch('/api/images')
+        .then(response => response.json())
+        .then(data => {
+            data.images.map(name => {
+                const link = document.createElement('a');
+                link.href = `/images/${name}`;
+                const img = document.createElement('img');
+                img.src = `/images/${name}`;
+                img.alt = name;
+                link.appendChild(img);
+                gallery.appendChild(link);
+            });
+        })
+        .catch(error => console.error('Error loading images:', error));
+</script>
 </body>
 </html>
