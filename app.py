@@ -29,7 +29,13 @@ routes = web.RouteTableDef()
 
 @routes.get('/')
 async def get_main(request: web.Request) -> web.Response:
-    """Обрабатывает GET-запросы на главную страницу."""
+    """GET requests to the main page.
+
+    Args:
+        request: Request object.
+    Returns:
+        web.Response: Response with HTML content of the main page.
+        """
     logger.info(f'GET: {request.path}')
 
     html_content = await read_file_async(os.path.join('static', 'index.html'))
@@ -42,8 +48,13 @@ async def get_main(request: web.Request) -> web.Response:
 
 @routes.get('/api/images')
 async def get_all_images(request: web.Request) -> web.Response:
-    """Get all images uploaded."""
+    """Returns a list of all uploaded images.
 
+    Args:
+        request: Request object.
+    Returns:
+        web.Response: Response with JSON list of images.
+        """
     logger.info(f'GET: {request.path}')
     images = [file for file in os.listdir(IMAGES_DIR) if
               isfile(os.path.join(IMAGES_DIR, file))]
@@ -53,7 +64,13 @@ async def get_all_images(request: web.Request) -> web.Response:
 
 @routes.get('/images')
 async def images_gallery_handler(request: web.Request) -> web.Response:
-    """Отдает HTML-страницу с галереей изображений."""
+    """Serves HTML page with an image gallery.
+
+    Args:
+        request: Request object.
+    Returns:
+        web.Response: Response with HTML content of the gallery page.
+        """
     try:
 
         html_content = await read_file_async(
@@ -67,7 +84,13 @@ async def images_gallery_handler(request: web.Request) -> web.Response:
 
 @routes.get('/upload')
 async def upload_form_handler(request: web.Request) -> web.Response:
-    """Отдает HTML-форму для загрузки изображений."""
+    """Serves HTML form for uploading images.
+
+    Args:
+        request: Request object.
+
+    Returns:
+        web.Response: Response with HTML content of the upload form."""
     try:
         html_content = await read_file_async(
             os.path.join('static', 'upload.html'))
@@ -80,7 +103,13 @@ async def upload_form_handler(request: web.Request) -> web.Response:
 
 @routes.post('/upload')
 async def post_handler(request: web.Request) -> web.Response:
-    """Обрабатывает загрузку изображения."""
+    """ Handles the upload of an image.
+
+    Args:
+        request: Request object.
+
+    Returns:
+        web.Response: Response with the result of the upload."""
     try:
         reader = await request.multipart()
         field = await reader.next()
@@ -110,13 +139,21 @@ async def post_handler(request: web.Request) -> web.Response:
 
 @routes.route('*', '/{tail:.*}')
 async def incorrect_url_handler(request: web.Request) -> web.Response:
-    """Обрабатывает некорректные URL."""
+    """Handles invalid URLs.
+
+    Args:
+        request: Request object.
+    Returns:
+        web.Response: Response with 404 error."""
     logger.error(f'Invalid path: {request.path}')
     return web.Response(status=404, text='Invalid URL')
 
 
 async def init_app() -> web.Application:
-    """Инициализирует приложение."""
+    """Initializes the application.
+
+    Returns:
+        web.Application: The application instance."""
     app = web.Application()
     app.add_routes(routes)
     return app
