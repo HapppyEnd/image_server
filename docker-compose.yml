@@ -16,6 +16,7 @@ services:
       - logs:/app/logs
     networks:
       - default
+    restart: on-failure:5
 
   nginx:
     container_name: nginx
@@ -31,3 +32,4 @@ services:
       - default
     depends_on:
       - app
+    restart: on-failure:5

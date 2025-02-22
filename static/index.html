@@ -4,72 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Главная</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        .container-nav {
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(90deg, #be1b86, #2b306c);
-        }
-        .nav-bar {
-            margin: 0 auto;
-            width: 80vw;
-            padding-top: 30px;
-            color: white;
-        }
-        a {
-            font-size: 16px;
-            font-weight: 600;
-            color: white;
-            text-decoration: none;
-            margin-right: 16px;
-        }
-        main {
-            width: 100%;
-            height: calc(100vh - 80px - 80px);
-            background: linear-gradient(90deg, #be1b86, #2b306c);
-        }
-        .header-text {
-            font-weight: 600;
-            font-size: 16px;
-            line-height: 30px;
-            padding-top: 10vh;
-        }
-        .centred {
-            text-align: center;
-        }
-        .tt {
-            padding-top: 10vh;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/styles.css">
+
 </head>
 <body>
-    <header class="container-nav">
-        <div class="nav-bar">
-            <a href="/">Главная</a>
-            <a href="/images">Галерея</a>
-            <a href="/upload">Загрузить изображение</a>
-        </div>
-    </header>
-<main>
-<div class="nav-bar tt">
-    <h1>Добро пожаловать на Image Hosting</h1>
-    <p class="header-text">Здесь вы можете легко загружать, хранить и управлять своими изображениями.
-        Наша платформа предоставляет удобный интерфейс для загрузки фотографий,
-        а также возможность скачивания их в любое время. Делитесь своими воспоминаниями,
-        создавайте альбомы и наслаждайтесь безопасным хранением ваших любимых моментов.
-        Начните прямо сейчас – загрузите свое первое изображение!</p>
-</div>
+<header class="container-nav">
+    <div class="nav-bar">
+        <a href="/">Главная</a>
+        <a href="/images">Галерея</a>
+        <a href="/upload">Загрузить изображение</a>
+    </div>
+</header>
+<main id="main-index">
+    <div class="nav-bar tt">
+        <h1>Добро пожаловать на сайт загрузки изображений!</h1>
+        <p class="header-text"> Здесь вы можете легко загружать, хранить и делиться
+            своими фотографиями.</p>
+            <p > Наша платформа поддерживает форматы JPG, PNG и GIF,
+            а максимальный размер файла — до 5 МБ.</p>
+            <ul class="header-text"> Преимущества нашего сервиса:
+            <li> Быстрая загрузка изображений.</li>
+            <li> Удобный доступ к вашим файлам с любого устройства.</li>
+            <li> Безопасное хранение данных.</li>
+
+    </ul>
+        <p>Начните прямо сейчас – загрузите свое первое изображение и поделитесь им с друзьями!
+        <a href="/upload">
+        <button class="submit" type="button">Загрузить</button>
+    </a></p>
+
+    </div>
 </main>
 
- <footer class="container-nav">
-        <div class="nav-bar centred">
-            @happpyend 2025г.
-        </div>
-    </footer>
+<footer class="container-nav">
+    <div class="nav-bar centred">
+        <a href="https://github.com/HapppyEnd"> HapppyEnd </a> 2025г.
+    </div>
+</footer>
 
 
 </body>
