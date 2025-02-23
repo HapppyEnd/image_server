@@ -1,6 +1,29 @@
+/**
+ * Fetches and displays a gallery of images from the server.
+ *
+ * This script fetches the list of images from the `/api/images`
+ * endpoint, * creates HTML elements for each image, and appends them
+ * to the gallery container.
+ *
+ * @example
+ * HTML structure:
+ * <div id="gallery"></div>
+ *
+ * After execution:
+ * <div id="gallery">
+ *   <a href="/images/image1.jpg">
+ *      <img src="/images/image1.jpg" alt="image1">
+ *   </a>
+ *   <a href="/images/image2.jpg">
+ *       <img src="/images/image2.jpg" alt="image2">
+ *   </a>
+ * </div>
+ *
+ * @throws {Error} If the fetch request fails or the response cannot
+ * be parsed as JSON.
+ */
 const gallery = document.getElementById('gallery');
 
-// Получаем список изображений из папки /images
 fetch('/api/images')
     .then(response => response.json())
     .then(data => {

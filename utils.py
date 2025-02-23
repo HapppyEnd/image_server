@@ -8,10 +8,10 @@ from aiohttp import web
 from loguru import logger
 from PIL import Image
 
-log_file = os.path.join('logs', 'app.log')
-logger.add(
-    log_file, format='{time:YYYY-MM-DD HH:mm:ss} {level}: {message}',
-    level='INFO')
+import constants
+
+log_file = os.path.join('logs', constants.LOG_FILE)
+logger.add(log_file, format=constants.LOG_FORMAT, level=constants.LOG_LEVEL)
 
 
 async def read_file_async(file_path: str) -> str:
@@ -25,7 +25,8 @@ async def read_file_async(file_path: str) -> str:
         FileNotFoundError: If the file does not exist.
     """
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
+        raise FileNotFoundError(
+            constants.FILE_NOT_FOUND.format(file_path=file_path))
     async with aiofiles.open(file_path, 'r', encoding='utf-8') as file:
         return await file.read()
 
@@ -39,7 +40,7 @@ async def check_file_uploaded(field) -> bool:
         bool: True if a file was uploaded, otherwise False.
         """
     if not field:
-        logger.warning('Upload failed. No file uploaded')
+        logger.warning(constants.UPLOAD_FAILED_NO_FILE)
         return False
     return True
 
@@ -54,8 +55,9 @@ async def check_file_size(content_length: int, max_file_size: int) -> bool:
         bool: True if the file size is within the limit, otherwise False.
         """
     if content_length > max_file_size:
-        logger.error('Upload failed: File too large.',
-                     content_length)
+        logger.error(
+            constants.FILE_TOO_LARGE.format(size=content_length),
+            content_length)
         return False
     return True
 
@@ -77,12 +79,14 @@ async def check_file_type(file_data: bytes,
         with Image.open(BytesIO(file_data)) as image:
             file_extension = image.format.lower() if image.format else None
             if file_extension not in allowed_extensions:
-                logger.error(f'Unsupported file extension: {file_extension}')
-                return None, 'Unsupported file extension'
+                logger.error(constants.UNSUPPORTED_EXTENSION.format(
+                    extension=file_extension))
+                return None, constants.UNSUPPORTED_EXTENSION_RU.format(
+                    file_extension=file_extension)
             return file_extension, None
     except Exception as e:
-        logger.error(f'Unsupported file type: {e}')
-        return None, 'Unsupported file type'
+        logger.error(constants.UNSUPPORTED_FILE_TYPE.format(error=e))
+        return None, constants.UNSUPPORTED_FILE_TYPE_RU
 
 
 async def save_file(file_data: bytes, file_extension: str,
@@ -101,7 +105,7 @@ async def save_file(file_data: bytes, file_extension: str,
     file_path = os.path.join(images_dir, filename)
     async with aiofiles.open(file_path, mode='wb') as f:
         await f.write(file_data)
-    logger.info(f'File uploaded successfully: {file_path}')
+    logger.info(constants.FILE_UPLOAD_SUCCESS.format(file_path=file_path))
     return filename
 
 
@@ -117,11 +121,11 @@ async def create_upload_response(filename: str, base_url: str,
         web.Response: A response with JSON data.
         """
     response = {
-        'message': 'File uploaded successfully',
+        'message': constants.UPLOAD_SUCCESS_MESSAGE,
         'file_url': f'{base_url}/{images_dir}/{filename}'
     }
     return web.Response(
-        status=201,
+        status=constants.HTTP_201_CREATED,
         text=json.dumps(response),
-        content_type='application/json'
+        content_type=constants.CONTENT_TYPE_JSON
     )
