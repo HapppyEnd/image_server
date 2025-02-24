@@ -1,9 +1,10 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
-# Messages
+# messages
 FILE_NOT_FOUND = 'File not found: {file_path}'
 FILE_NOT_FOUND_RU = 'Файл не найден'
 UPLOAD_FAILED_NO_FILE = 'Upload failed. No file uploaded'
@@ -18,7 +19,7 @@ UPLOAD_ERROR = 'Error during file upload: {error}'
 UNSUPPORTED_FILE_TYPE_RU = 'Неподдерживаемый тип файла'
 FILE_UPLOAD_SUCCESS = 'File uploaded successfully: {file_path}'
 UPLOAD_SUCCESS_MESSAGE = 'Изображение успешно загружено'
-INVALID_URL = 'Invalid URL'
+INVALID_URL = 'Invalid URL: {path}'
 ERROR_505 = 'Ошибка сервера'
 INVALID_PATH = "Invalid path: {path}"
 
@@ -28,7 +29,7 @@ LOG_LEVEL = 'INFO'
 LOG_FILE = 'app.log'
 LOG_DIR = 'logs'
 
-# Directories
+# images
 IMAGES_DIR = 'images'
 
 # HTML
@@ -51,11 +52,10 @@ CONTENT_TYPE_JSON = "application/json"
 
 # .env
 ALLOWED_EXTENSIONS = tuple(os.getenv('ALLOWED_EXTENSIONS').split(','))
+APP_PORT = int(os.getenv('APP_PORT'))
 BASE_URL = os.getenv('BASE_URL')
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE'))
 
-# Port
-APP_PORT = 8000
-
-# Request
+# Requests
 GET_REQUEST = 'GET: {request}'
+POST_REQUEST = 'POST: {request}'

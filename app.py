@@ -7,7 +7,8 @@ from loguru import logger
 
 import constants
 from utils import (check_file_size, check_file_type, check_file_uploaded,
-                   create_upload_response, read_file_async, save_file)
+                   create_upload_response, get_html_page, read_file_async,
+                   save_file)
 
 os.makedirs(constants.IMAGES_DIR, exist_ok=True)
 os.makedirs('logs', exist_ok=True)
@@ -64,17 +65,8 @@ async def images_gallery_handler(request: web.Request) -> web.Response:
     Returns:
         web.Response: Response with HTML content of the gallery page.
         """
-    try:
-
-        html_content = await read_file_async(
-            os.path.join('static', constants.IMAGES_HTML))
-        logger.info(constants.GET_REQUEST.format(request=request.path))
-        return web.Response(text=html_content,
-                            content_type=constants.CONTENT_TYPE_HTML)
-    except Exception as e:
-        logger.error(constants.LOAD_IMAGE_GALLERY_ERROR.format(error=e))
-        return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-                            text=constants.ERROR_505)
+    return await get_html_page(request, constants.IMAGES_HTML,
+                               error_message=constants.LOAD_IMAGE_GALLERY_ERROR)
 
 
 @routes.get('/upload')
@@ -83,19 +75,10 @@ async def upload_form_handler(request: web.Request) -> web.Response:
 
     Args:
         request: Request object.
-
     Returns:
         web.Response: Response with HTML content of the upload form."""
-    try:
-        html_content = await read_file_async(
-            os.path.join('static', constants.UPLOAD_HTML))
-        logger.info(constants.GET_REQUEST.format(request=request.path))
-        return web.Response(text=html_content,
-                            content_type=constants.CONTENT_TYPE_HTML)
-    except Exception as e:
-        logger.error(constants.UPLOAD_FORM_ERROR.format(error=e))
-        return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-                            text=constants.ERROR_505)
+    return await get_html_page(request, constants.UPLOAD_HTML,
+                               error_message=constants.UPLOAD_FORM_ERROR)
 
 
 @routes.post('/upload')
@@ -104,12 +87,12 @@ async def post_handler(request: web.Request) -> web.Response:
 
     Args:
         request: Request object.
-
     Returns:
         web.Response: Response with the result of the upload."""
     try:
         reader = await request.multipart()
         field = await reader.next()
+        logger.info(constants.POST_REQUEST.format(request=request.path))
 
         if not await check_file_uploaded(field):
             return web.Response(status=constants.HTTP_400_BAD_REQUEST,
@@ -135,6 +118,7 @@ async def post_handler(request: web.Request) -> web.Response:
                                    constants.IMAGES_DIR)
         return await create_upload_response(filename, constants.BASE_URL,
                                             constants.IMAGES_DIR)
+
     except Exception as e:
         logger.error(constants.UPLOAD_ERROR.format(error=e))
         return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -151,7 +135,7 @@ async def incorrect_url_handler(request: web.Request) -> web.Response:
         web.Response: Response with 404 error."""
     logger.error(constants.INVALID_PATH.format(path=request.path))
     return web.Response(status=constants.HTTP_404_NOT_FOUND,
-                        text=constants.INVALID_URL)
+                        text=constants.INVALID_URL.format(path=request.path))
 
 
 async def init_app() -> web.Application:
