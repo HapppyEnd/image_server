@@ -33,9 +33,9 @@ LOG_DIR = 'logs'
 IMAGES_DIR = 'images'
 
 # HTML
-INDEX_HTML = "index.html"
-IMAGES_HTML = "images.html"
-UPLOAD_HTML = "upload.html"
+INDEX_HTML = 'index.html'
+IMAGES_HTML = 'images/images.html'
+UPLOAD_HTML = 'upload.html'
 
 # HTTP status
 HTTP_200_OK = 200

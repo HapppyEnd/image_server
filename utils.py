@@ -30,7 +30,9 @@ async def read_file_async(file_path: str) -> str:
     async with aiofiles.open(file_path, 'r', encoding='utf-8') as file:
         return await file.read()
 
-async def get_html_page(request: web.Request, html_file: str, error_message: str) -> web.Response:
+
+async def get_html_page(request: web.Request, html_file: str,
+                        error_message: str) -> web.Response:
     """Get HTML page from static directory.
 
     Args:
@@ -54,6 +56,7 @@ async def get_html_page(request: web.Request, html_file: str, error_message: str
             status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
             text=constants.ERROR_505
         )
+
 
 async def check_file_uploaded(field) -> bool:
     """Checks if a file has been uploaded.
