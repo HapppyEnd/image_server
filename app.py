@@ -4,7 +4,7 @@ from os.path import isfile
 
 from aiohttp import web
 from loguru import logger
-
+from db import Database
 import constants
 from utils import (check_file_size, check_file_type, check_file_uploaded,
                    create_upload_response, get_html_page, read_file_async,
@@ -17,6 +17,12 @@ log_file = os.path.join('logs', constants.LOG_FILE)
 logger.add(log_file, format=constants.LOG_FORMAT, level=constants.LOG_LEVEL)
 
 routes = web.RouteTableDef()
+db = Database()
+
+
+async def init_db(app: web.Application):
+    await db.connect()
+    await db.init_db()
 
 
 @routes.get('/')
@@ -49,11 +55,20 @@ async def get_all_images(request: web.Request) -> web.Response:
         web.Response: Response with JSON list of images.
         """
     logger.info(constants.GET_REQUEST.format(request=request.path))
-    images = [file for file in os.listdir(constants.IMAGES_DIR) if
-              isfile(os.path.join(constants.IMAGES_DIR, file))]
-    return web.Response(status=constants.HTTP_200_OK,
-                        text=json.dumps({'images': images}),
-                        content_type=constants.CONTENT_TYPE_JSON)
+    try:
+        page = int(request.query.get('page', 1))
+        images_data = await db.get_images(page)
+
+        for img in images_data['images']:
+            if 'upload_time' in img:
+                img['upload_time'] = img['upload_time'].isoformat()
+
+        return web.json_response(images_data)
+    except Exception as e:
+        logger.error(constants.LOAD_IMAGE_GALLERY_ERROR.format(error=e))
+        return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
+                            text=json.dumps({'error': str(e)}),
+                            content_type=constants.CONTENT_TYPE_JSON)
 
 
 @routes.get('/images')
@@ -116,13 +131,51 @@ async def post_handler(request: web.Request) -> web.Response:
 
         filename = await save_file(file_data, file_extension,
                                    constants.IMAGES_DIR)
+        await db.insert_image(filename=filename,
+                              original_name=field.filename,
+                              size=content_length,
+                              file_type=file_extension)
         return await create_upload_response(filename, constants.BASE_URL,
                                             constants.IMAGES_DIR)
 
     except Exception as e:
         logger.error(constants.UPLOAD_ERROR.format(error=e))
         return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-                            text=constants.ERROR_505)
+                            text=constants.ERROR_500)
+
+
+@routes.delete('/delete/{filename}')
+async def delete_handler(request: web.Request) -> web.Response:
+    try:
+        filename = request.match_info['filename']
+
+        deleted = await db.delete_image(filename)
+        if not deleted:
+            return web.Response(
+                status=constants.HTTP_404_NOT_FOUND,
+                text=constants.NOT_FOUND_IN_DB,
+                content_type=constants.CONTENT_TYPE_JSON
+            )
+
+        file_path = os.path.join(constants.IMAGES_DIR, filename)
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        except OSError as e:
+            logger.error(constants.DELETE_FILE_ERROR.format(error=e))
+
+        return web.Response(
+            status=200,
+            text=constants.DELETE_FILE_SUCCESS,
+            content_type=constants.CONTENT_TYPE_JSON
+        )
+    except Exception as e:
+        logger.error(constants.DELETE_FILE_ERROR.format(error=e))
+        return web.Response(
+            status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
+            text=constants.ERROR_500,
+            content_type=constants.CONTENT_TYPE_JSON
+        )
 
 
 @routes.route('*', '/{tail:.*}')
@@ -145,6 +198,7 @@ async def init_app() -> web.Application:
         web.Application: The application instance."""
     app = web.Application()
     app.add_routes(routes)
+    await init_db(app)
     return app
 
 

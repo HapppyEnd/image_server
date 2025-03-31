@@ -1,9 +1,11 @@
 networks:
-  default:
+  app-network:
+    driver: bridge
 
 volumes:
   images:
   logs:
+  postgres_data:
 
 services:
   app:
@@ -15,7 +17,24 @@ services:
       - images:/app/images
       - logs:/app/logs
     networks:
-      - default
+      - app-network
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: on-failure:5
+
+  db:
+    container_name: db
+    image: postgres:13
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"
     restart: on-failure:5
 
   nginx:
@@ -29,7 +48,7 @@ services:
       - ./static:/etc/nginx/html
       - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
-      - default
+      - app-network
     depends_on:
       - app
     restart: on-failure:5

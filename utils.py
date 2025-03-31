@@ -54,7 +54,7 @@ async def get_html_page(request: web.Request, html_file: str,
         logger.error(error_message.format(error=e))
         return web.Response(
             status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-            text=constants.ERROR_505
+            text=constants.ERROR_500
         )
 
 

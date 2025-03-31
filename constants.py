@@ -20,9 +20,11 @@ UNSUPPORTED_FILE_TYPE_RU = 'Неподдерживаемый тип файла'
 FILE_UPLOAD_SUCCESS = 'File uploaded successfully: {file_path}'
 UPLOAD_SUCCESS_MESSAGE = 'Изображение успешно загружено'
 INVALID_URL = 'Invalid URL: {path}'
-ERROR_505 = 'Ошибка сервера'
+ERROR_500 = 'Ошибка сервера'
 INVALID_PATH = "Invalid path: {path}"
-
+DELETE_FILE_ERROR = 'Failed to delete file {error}'
+DELETE_FILE_SUCCESS = 'File deleted successfully: {filename}'
+NOT_FOUND_IN_DB = 'Image not found in database'
 # logs
 LOG_FORMAT = '{time:YYYY-MM-DD HH:mm:ss} {level}: {message}'
 LOG_LEVEL = 'INFO'
@@ -55,7 +57,29 @@ ALLOWED_EXTENSIONS = tuple(os.getenv('ALLOWED_EXTENSIONS').split(','))
 APP_PORT = int(os.getenv('APP_PORT'))
 BASE_URL = os.getenv('BASE_URL')
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE'))
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 # Requests
 GET_REQUEST = 'GET: {request}'
 POST_REQUEST = 'POST: {request}'
+
+# Pages
+ITEMS_PER_PAGE = 10
+
+# Database
+DB_POOL_MIN_SIZE = 1
+DB_POOL_MAX_SIZE = 10
+
+ERROR_DB_CONNECTION = 'Database connection error {error}'
+ERROR_DB_OPERATION = 'Database operation failed {error}'
+DB_POOL_SUCCESS = 'Database pool created successfully'
+DB_POOL_CLOSE_SUCCESS = 'Database pool closed successfully'
+DISCONNECT_FAILED = 'Failed to disconnect from database {error}'
+CREATE_TABLE_SUCCESS = 'Database tables initialized'
+CREATE_TABLE_ERROR = 'Database table initialization failed {error}'
+DB_CONNECTION_NOT_ESTABLISH = 'Database connection is not established'
+IMG_INSERT_FAILED = 'Image insert failed {error}'
+IMG_DELETE_FAILED = 'Image deletion failed {error}'
+IMG_INSERT_SUCCESS = 'Image inserted with ID: {image_id}'
+IMG_DELETE_SUCCESS = 'Image deleted successfully: {filename}'
+FAIL_TO_FETCH_IMG = 'Failed to fetch images: {error}'
