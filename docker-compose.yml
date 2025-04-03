@@ -28,7 +28,7 @@ services:
     container_name: db
     image: postgres:13
     env_file:
-      - .env
+      - .env  # Все переменные берутся отсюда
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

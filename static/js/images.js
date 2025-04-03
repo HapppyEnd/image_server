@@ -25,14 +25,18 @@
 const gallery = document.getElementById('gallery');
 
 fetch('/api/images')
-    .then(response => response.json())
+    .then(async response => {
+        return await response.json()
+    })
     .then(data => {
-        data.images.map(name => {
+        gallery.innerHTML = '';  // Clear previous content
+        console.log(data)
+        data.images.map(item => {
             const link = document.createElement('a');
-            link.href = `/images/${name}`;
+            link.href = `/images/${item.filename}`;
             const img = document.createElement('img');
-            img.src = `/images/${name}`;
-            img.alt = name;
+            img.src = `/images/${item.filename}`;
+            img.alt = item.filename;
             link.appendChild(img);
             gallery.appendChild(link);
         });

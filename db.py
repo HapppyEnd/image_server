@@ -12,8 +12,8 @@ from queries import (
     INSERT_IMAGE,
     GET_IMAGES,
     COUNT_IMAGES,
-    FIND_IMAGE,
-    DELETE_IMAGE
+    FIND_BY_ID,
+    DELETE_BY_ID
 )
 
 log_file = os.path.join('logs', constants.LOG_FILE)
@@ -26,10 +26,10 @@ class Database:
     _initialized = False
 
     def __new__(cls):
-        """Create or return the singleton instance.
+        """Create or return singleton instance.
 
         Returns:
-            Database: The singleton database instance.
+            Database: Singleton database instance.
         """
         if not cls._instance:
             cls._instance = super().__new__(cls)
@@ -171,7 +171,6 @@ class Database:
                     images = [dict(zip(columns, row)) for row in
                               await images_cur.fetchall()]
 
-                # Получаем общее количество отдельным курсором
                 async with conn.cursor() as count_cur:
                     await count_cur.execute(COUNT_IMAGES)
                     result = await count_cur.fetchone()
@@ -189,11 +188,11 @@ class Database:
             logger.error(constants.FAIL_TO_FETCH_IMG.format(error=e))
             raise RuntimeError(constants.FAIL_TO_FETCH_IMG) from e
 
-    async def delete_image(self, filename: str) -> bool:
+    async def delete_image(self, image_id: str) -> tuple[bool, Optional[str]]:
         """Delete an image record from database.
 
         Args:
-            filename: The filename of the image to delete.
+            image_id: ID of the image to delete.
         Returns:
             bool: True if success, False if image not found.
         Raises:
@@ -205,21 +204,21 @@ class Database:
 
         try:
             async with self.pool.connection() as conn:
-                result = await conn.fetchval(
-                    FIND_IMAGE,
-                    (filename,)
+                filename = await conn.fetchval(
+                    FIND_BY_ID,
+                    (image_id,)
                 )
-                if not result:
+                if not filename:
                     logger.warning(constants.FILE_NOT_FOUND)
-                    return False
+                    return False, None
 
                 await conn.execute(
-                    DELETE_IMAGE,
-                    (filename,)
+                    DELETE_BY_ID,
+                    (image_id,)
                 )
                 logger.info(
-                    constants.IMG_DELETE_SUCCESS.format(filename=filename))
-                return True
+                    constants.IMG_DELETE_SUCCESS.format(image_id=image_id))
+                return True, filename
         except psycopg.Error as e:
             logger.error(constants.IMG_DELETE_FAILED.format(error=e))
             raise RuntimeError(constants.IMG_DELETE_FAILED) from e

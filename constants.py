@@ -23,7 +23,7 @@ INVALID_URL = 'Invalid URL: {path}'
 ERROR_500 = 'Ошибка сервера'
 INVALID_PATH = "Invalid path: {path}"
 DELETE_FILE_ERROR = 'Failed to delete file {error}'
-DELETE_FILE_SUCCESS = 'File deleted successfully: {filename}'
+DELETE_FILE_SUCCESS = 'File deleted successfully: {id}'
 NOT_FOUND_IN_DB = 'Image not found in database'
 # logs
 LOG_FORMAT = '{time:YYYY-MM-DD HH:mm:ss} {level}: {message}'

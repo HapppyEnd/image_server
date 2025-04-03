@@ -1,11 +1,11 @@
 import json
 import os
-from os.path import isfile
 
 from aiohttp import web
 from loguru import logger
-from db import Database
+
 import constants
+from db import Database
 from utils import (check_file_size, check_file_type, check_file_uploaded,
                    create_upload_response, get_html_page, read_file_async,
                    save_file)
@@ -21,6 +21,7 @@ db = Database()
 
 
 async def init_db(app: web.Application):
+    logger.info(f"Подключение к БД: {constants.DATABASE_URL}")
     await db.connect()
     await db.init_db()
 
@@ -57,13 +58,10 @@ async def get_all_images(request: web.Request) -> web.Response:
     logger.info(constants.GET_REQUEST.format(request=request.path))
     try:
         page = int(request.query.get('page', 1))
+        logger.info(f'PAGES {page}')
         images_data = await db.get_images(page)
-
-        for img in images_data['images']:
-            if 'upload_time' in img:
-                img['upload_time'] = img['upload_time'].isoformat()
-
-        return web.json_response(images_data)
+        return web.Response(status=200, text=json.dumps(images_data),
+                           content_type=constants.CONTENT_TYPE_JSON)
     except Exception as e:
         logger.error(constants.LOAD_IMAGE_GALLERY_ERROR.format(error=e))
         return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -80,8 +78,9 @@ async def images_gallery_handler(request: web.Request) -> web.Response:
     Returns:
         web.Response: Response with HTML content of the gallery page.
         """
-    return await get_html_page(request, constants.IMAGES_HTML,
-                               error_message=constants.LOAD_IMAGE_GALLERY_ERROR)
+    return await get_html_page(
+        request, constants.IMAGES_HTML,
+        error_message=constants.LOAD_IMAGE_GALLERY_ERROR)
 
 
 @routes.get('/upload')
@@ -144,31 +143,31 @@ async def post_handler(request: web.Request) -> web.Response:
                             text=constants.ERROR_500)
 
 
-@routes.delete('/delete/{filename}')
+@routes.delete('/api/images/{id}')
 async def delete_handler(request: web.Request) -> web.Response:
     try:
-        filename = request.match_info['filename']
+        image_id = request.match_info['id']
 
-        deleted = await db.delete_image(filename)
-        if not deleted:
+        success, filename = await db.delete_image(image_id)
+        if not success:
             return web.Response(
                 status=constants.HTTP_404_NOT_FOUND,
                 text=constants.NOT_FOUND_IN_DB,
                 content_type=constants.CONTENT_TYPE_JSON
             )
+        if filename:
+            file_path = os.path.join(constants.IMAGES_DIR, filename)
+            try:
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except OSError as e:
+                logger.error(constants.DELETE_FILE_ERROR.format(error=e))
 
-        file_path = os.path.join(constants.IMAGES_DIR, filename)
-        try:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        except OSError as e:
-            logger.error(constants.DELETE_FILE_ERROR.format(error=e))
-
-        return web.Response(
-            status=200,
-            text=constants.DELETE_FILE_SUCCESS,
-            content_type=constants.CONTENT_TYPE_JSON
-        )
+            return web.Response(
+                status=200,
+                text=constants.DELETE_FILE_SUCCESS,
+                content_type=constants.CONTENT_TYPE_JSON
+            )
     except Exception as e:
         logger.error(constants.DELETE_FILE_ERROR.format(error=e))
         return web.Response(
