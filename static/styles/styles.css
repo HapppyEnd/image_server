@@ -95,21 +95,3 @@ a {
         width: 500px;
     }
 }
-
-.gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.gallery img {
-    max-width: 200px;
-    height: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 5px;
-}
-
-.gallery img:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}

@@ -24,7 +24,8 @@ GET_IMAGES = """
         original_name,
         size,
         file_type,
-        size/1024 AS size_kb
+        size/1024 AS size_kb,
+        to_char(upload_time, 'YYYY-MM-DD HH24:MI:SS') AS upload_date
     FROM images
     ORDER BY upload_time DESC
     LIMIT %s OFFSET %s
@@ -32,6 +33,6 @@ GET_IMAGES = """
 
 COUNT_IMAGES = """SELECT COUNT(*) FROM images"""
 
+FIND_BY_ID = """SELECT filename FROM images WHERE id = %s"""
 
 DELETE_BY_ID = """DELETE FROM images WHERE id = %s RETURNING filename"""
-FIND_BY_ID = """SELECT filename FROM images WHERE id = %s"""

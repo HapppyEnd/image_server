@@ -204,21 +204,26 @@ class Database:
 
         try:
             async with self.pool.connection() as conn:
-                filename = await conn.fetchval(
-                    FIND_BY_ID,
-                    (image_id,)
-                )
-                if not filename:
-                    logger.warning(constants.FILE_NOT_FOUND)
-                    return False, None
+                async with conn.cursor() as cur:
+                    await cur.execute(
+                        FIND_BY_ID,
+                        (image_id,)
+                    )
+                    filename = await cur.fetchone()
+                    logger.info(f'FIND_BY_ID: {filename}')
+                    if not filename:
+                        logger.warning(constants.FILE_NOT_FOUND)
+                        return False, None
 
-                await conn.execute(
-                    DELETE_BY_ID,
-                    (image_id,)
-                )
-                logger.info(
-                    constants.IMG_DELETE_SUCCESS.format(image_id=image_id))
-                return True, filename
+                    await cur.execute(
+                        DELETE_BY_ID,
+                        (image_id,)
+                    )
+                    deleted = await cur.fetchone()
+                    logger.info(f'DELETE_BY_ID: {deleted}')
+                    logger.info(
+                        constants.IMG_DELETE_SUCCESS.format(filename=filename))
+                    return True, filename
         except psycopg.Error as e:
             logger.error(constants.IMG_DELETE_FAILED.format(error=e))
             raise RuntimeError(constants.IMG_DELETE_FAILED) from e

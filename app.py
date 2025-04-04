@@ -147,8 +147,8 @@ async def post_handler(request: web.Request) -> web.Response:
 async def delete_handler(request: web.Request) -> web.Response:
     try:
         image_id = request.match_info['id']
-
         success, filename = await db.delete_image(image_id)
+
         if not success:
             return web.Response(
                 status=constants.HTTP_404_NOT_FOUND,
