@@ -1,112 +1,177 @@
 /**
- * Fetches and displays a gallery of images from the server.
- *
- * This script fetches the list of images from the `/api/images`
- * endpoint, * creates HTML elements for each image, and appends them
- * to the gallery container.
- *
- * @example
- * HTML structure:
- * <div id="gallery"></div>
- *
- * After execution:
- * <div id="gallery">
- *   <a href="/images/image1.jpg">
- *      <img src="/images/image1.jpg" alt="image1">
- *   </a>
- *   <a href="/images/image2.jpg">
- *       <img src="/images/image2.jpg" alt="image2">
- *   </a>
- * </div>
- *
- * @throws {Error} If the fetch request fails or the response cannot
- * be parsed as JSON.
+ * Fetches and displays a gallery of images from the server with pagination.
  */
 const gallery = document.getElementById('gallery');
-const deleteButton = document.getElementById('deleteButton');
+const paginationContainer = document.createElement('div');
+paginationContainer.id = 'pagination';
+paginationContainer.className = 'pagination'; // Добавляем класс для стилизации
+gallery.after(paginationContainer);
+
+let currentPage = 1;
+const imagesPerPage = 10;
 
 const handleDelete = (id) => {
     fetch(`/api/images/${id}`, {
         method: 'DELETE'
-    }).then(() => alert("Delete"))
+    }).then(() => {
+        alert("Изображение удалено");
+        fetchImages(currentPage);
+    });
 }
 
-fetch('/api/images')
-    .then(async response => {
-        return await response.json()
-    })
-    .then(data => {
-        gallery.innerHTML = '';  // Clear previous content
-        console.log(data)
-        data.images.map(item => {
-            // const link = document.createElement('a');
-            // link.href = `/images/${item.filename}`;
-            // const img = document.createElement('img');
-            // img.src = `/images/${item.filename}`;
-            // img.alt = item.filename;
-            // link.appendChild(img);
-            // gallery.appendChild(link);
-            // const btn = document.createElement('button')
-            // btn.addEventListener('click', () => handleDelete(item.id))
-            gallery.appendChild(card(item));
-        });
-    })
-    .catch(error => console.error('Error loading images:', error));
+// Основная функция загрузки изображений
+async function fetchImages(page = 1) {
+    try {
+        const response = await fetch(`/api/images?page=${page}`);
+        const data = await response.json();
 
+        gallery.innerHTML = '';
+        data.images.forEach(item => gallery.appendChild(card(item)));
+
+        renderPagination(page, data.total_pages || 1);
+        currentPage = page;
+
+        history.pushState(null, null, `?page=${page}`);
+    } catch (error) {
+        console.error('Error loading images:', error);
+    }
+}
+
+// Функция рендеринга пагинации с иконками
+function renderPagination(currentPage, totalPages) {
+    paginationContainer.innerHTML = '';
+
+    // Первая страница
+    if (currentPage > 1) {
+        const firstBtn = createPaginationButton('<<', () => fetchImages(1));
+        firstBtn.className = 'pagination-first';
+        firstBtn.title = 'Первая страница';
+        paginationContainer.appendChild(firstBtn);
+    }
+
+    // Предыдущая страница
+    if (currentPage > 1) {
+        const prevBtn = createPaginationButton('<', () => fetchImages(currentPage - 1));
+        prevBtn.className = 'pagination-prev';
+        prevBtn.title = 'Предыдущая страница';
+        paginationContainer.appendChild(prevBtn);
+    }
+
+    // Текущая страница и ближайшие
+    const startPage = Math.max(1, currentPage - 1);
+    const endPage = Math.min(totalPages, currentPage + 1);
+
+    if (startPage > 1) {
+        const dots = document.createElement('span');
+        dots.className = 'pagination-dots';
+        dots.textContent = '...';
+        paginationContainer.appendChild(dots);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = createPaginationButton(i, () => fetchImages(i));
+        pageBtn.className = 'pagination-page';
+        if (i === currentPage) {
+            pageBtn.classList.add('active');
+        }
+        paginationContainer.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPages) {
+        const dots = document.createElement('span');
+        dots.className = 'pagination-dots';
+        dots.textContent = '...';
+        paginationContainer.appendChild(dots);
+    }
+
+    // Следующая страница
+    if (currentPage < totalPages) {
+        const nextBtn = createPaginationButton('>', () => fetchImages(currentPage + 1));
+        nextBtn.className = 'pagination-next';
+        nextBtn.title = 'Следующая страница';
+        paginationContainer.appendChild(nextBtn);
+    }
+
+    // Последняя страница
+    if (currentPage < totalPages) {
+        const lastBtn = createPaginationButton('>>', () => fetchImages(totalPages));
+        lastBtn.className = 'pagination-last';
+        lastBtn.title = 'Последняя страница';
+        paginationContainer.appendChild(lastBtn);
+    }
+}
+
+// Вспомогательная функция для создания кнопок
+function createPaginationButton(text, onClick) {
+    const button = document.createElement('button');
+    button.innerHTML = text;
+    button.addEventListener('click', onClick);
+    return button;
+}
+
+// Функция создания карточки (без изменений)
 const card = (item) => {
-    const card = document.createElement('div')
-    card.className = 'card'
+    const card = document.createElement('div');
+    card.className = 'card';
 
     const link = document.createElement('a');
     link.href = `/images/${item.filename}`;
 
-
-    const imgContainer = document.createElement('div')
-    imgContainer.className = 'imgContainer'
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'imgContainer';
 
     const img = document.createElement('img');
     img.src = `/images/${item.filename}`;
     img.alt = item.filename;
-    img.className = 'img'
+    img.className = 'img';
 
-    const textContainer = document.createElement('div')
-    textContainer.className = 'textContainer'
+    const textContainer = document.createElement('div');
+    textContainer.className = 'textContainer';
 
-    const titleContainer = document.createElement('div')
-    titleContainer.className = 'titleContainer'
+    const size = document.createElement('div');
+    size.className = 'size';
+    size.innerText = `Размер: ${item.size_kb}Кб`;
 
-    const size = document.createElement('div')
-    size.className = 'size'
-    size.innerText = `Размер: ${item.size_kb}Кб`
+    const date = document.createElement('div');
+    date.innerText = `${item.upload_date}`;
 
-    const date = document.createElement('div')
-    date.innerText = `${item.upload_date}`
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'buttonContainer';
 
-    const buttonContainer = document.createElement('div')
-    buttonContainer.className = 'buttonContainer'
+    const viewButton = document.createElement('button');
+    viewButton.textContent = "Посмотреть";
+    link.appendChild(viewButton);
 
-    const viewButton = document.createElement('button')
-    viewButton.textContent = "Посмотреть"
-    link.appendChild(viewButton)
-
-    const btn = document.createElement('button')
+    const btn = document.createElement('button');
     btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        handleDelete(item.id)
-    })
-    btn.textContent = "Удалить"
+        handleDelete(item.id);
+    });
+    btn.textContent = "Удалить";
 
-    textContainer.appendChild(size)
-    textContainer.appendChild(date)
-    buttonContainer.appendChild(link)
-    buttonContainer.appendChild(btn)
+    textContainer.appendChild(size);
+    textContainer.appendChild(date);
+    buttonContainer.appendChild(link);
+    buttonContainer.appendChild(btn);
 
-    card.appendChild(imgContainer)
-    card.appendChild(textContainer)
-    card.appendChild(buttonContainer)
-    imgContainer.appendChild(img)
+    card.appendChild(imgContainer);
+    card.appendChild(textContainer);
+    card.appendChild(buttonContainer);
+    imgContainer.appendChild(img);
 
+    return card;
+};
 
-    return card
-}
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = parseInt(urlParams.get('page')) || 1;
+    fetchImages(page);
+});
+
+window.addEventListener('popstate', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = parseInt(urlParams.get('page')) || 1;
+    fetchImages(page);
+});
