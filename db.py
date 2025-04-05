@@ -162,6 +162,7 @@ class Database:
             raise RuntimeError(constants.DB_CONNECTION_NOT_ESTABLISH)
 
         offset: int = (page - 1) * ITEMS_PER_PAGE
+        logger.info(f'PAGE DB {page}')
         try:
             async with self.pool.connection() as conn:
                 async with conn.cursor() as images_cur:

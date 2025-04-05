@@ -64,7 +64,7 @@ GET_REQUEST = 'GET: {request}'
 POST_REQUEST = 'POST: {request}'
 
 # Pages
-ITEMS_PER_PAGE = 10
+ITEMS_PER_PAGE = 5
 
 # Database
 DB_POOL_MIN_SIZE = 1
