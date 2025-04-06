@@ -21,7 +21,7 @@ db = Database()
 
 
 async def init_db(app: web.Application):
-    logger.info(f"Подключение к БД: {constants.DATABASE_URL}")
+    logger.info(constants.DB_CONNECT.format(db=constants.DATABASE_URL))
     await db.connect()
     await db.init_db()
 
@@ -55,18 +55,17 @@ async def get_all_images(request: web.Request) -> web.Response:
     Returns:
         web.Response: Response with JSON list of images.
         """
-    logger.info(constants.GET_REQUEST.format(request=request.query.get('page', 1)))
+    logger.info(
+        constants.GET_REQUEST.format(request=request.query.get('page', 1)))
     try:
         page = int(request.query.get('page', 1))
-        logger.info(f'PAGES {page}')
         images_data = await db.get_images(page)
         return web.Response(status=200, text=json.dumps(images_data),
-                           content_type=constants.CONTENT_TYPE_JSON)
+                            content_type=constants.CONTENT_TYPE_JSON)
     except Exception as e:
         logger.error(constants.LOAD_IMAGE_GALLERY_ERROR.format(error=e))
         return web.Response(status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-                            text=json.dumps({'error': str(e)}),
-                            content_type=constants.CONTENT_TYPE_JSON)
+                            text=constants.LOAD_IMAGE_GALLERY_ERROR)
 
 
 @routes.get('/images')
@@ -151,9 +150,7 @@ async def delete_handler(request: web.Request) -> web.Response:
         if not success:
             return web.Response(
                 status=constants.HTTP_404_NOT_FOUND,
-                text=constants.NOT_FOUND_IN_DB,
-                content_type=constants.CONTENT_TYPE_JSON
-            )
+                text=constants.NOT_FOUND_IN_DB)
         if filename:
             file_path = os.path.join(constants.IMAGES_DIR, filename[0])
             try:
@@ -164,16 +161,12 @@ async def delete_handler(request: web.Request) -> web.Response:
 
             return web.Response(
                 status=200,
-                text=constants.DELETE_FILE_SUCCESS,
-                content_type=constants.CONTENT_TYPE_JSON
-            )
+                text=constants.DELETE_FILE_SUCCESS)
     except Exception as e:
         logger.error(constants.DELETE_FILE_ERROR.format(error=e))
         return web.Response(
             status=constants.HTTP_500_INTERNAL_SERVER_ERROR,
-            text=constants.ERROR_500,
-            content_type=constants.CONTENT_TYPE_JSON
-        )
+            text=constants.ERROR_500)
 
 
 @routes.route('*', '/{tail:.*}')

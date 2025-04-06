@@ -24,7 +24,7 @@ ERROR_500 = 'Ошибка сервера'
 INVALID_PATH = "Invalid path: {path}"
 DELETE_FILE_ERROR = 'Failed to delete file {error}'
 DELETE_FILE_SUCCESS = 'File deleted successfully: {id}'
-NOT_FOUND_IN_DB = 'Image not found in database'
+
 # logs
 LOG_FORMAT = '{time:YYYY-MM-DD HH:mm:ss} {level}: {message}'
 LOG_LEVEL = 'INFO'
@@ -83,3 +83,5 @@ IMG_DELETE_FAILED = 'Image deletion failed {error}'
 IMG_INSERT_SUCCESS = 'Image inserted with ID: {image_id}'
 IMG_DELETE_SUCCESS = 'Image deleted successfully: {filename}'
 FAIL_TO_FETCH_IMG = 'Failed to fetch images: {error}'
+NOT_FOUND_IN_DB = 'Image not found in database'
+DB_CONNECT = 'Connected to database: {db}'

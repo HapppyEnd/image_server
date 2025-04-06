@@ -162,7 +162,6 @@ class Database:
             raise RuntimeError(constants.DB_CONNECTION_NOT_ESTABLISH)
 
         offset: int = (page - 1) * ITEMS_PER_PAGE
-        logger.info(f'PAGE DB {page}')
         try:
             async with self.pool.connection() as conn:
                 async with conn.cursor() as images_cur:
@@ -211,7 +210,6 @@ class Database:
                         (image_id,)
                     )
                     filename = await cur.fetchone()
-                    logger.info(f'FIND_BY_ID: {filename}')
                     if not filename:
                         logger.warning(constants.FILE_NOT_FOUND)
                         return False, None
@@ -220,8 +218,7 @@ class Database:
                         DELETE_BY_ID,
                         (image_id,)
                     )
-                    deleted = await cur.fetchone()
-                    logger.info(f'DELETE_BY_ID: {deleted}')
+                    await cur.fetchone()
                     logger.info(
                         constants.IMG_DELETE_SUCCESS.format(filename=filename))
                     return True, filename
