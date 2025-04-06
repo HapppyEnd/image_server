@@ -177,12 +177,12 @@ class Database:
                     total = result[0] if result else 0
 
                 return {
-                    'images': images,
-                    'total': total,
-                    'page': page,
-                    'per_page': ITEMS_PER_PAGE,
-                    'total_pages': (total + ITEMS_PER_PAGE - 1
-                                    ) // ITEMS_PER_PAGE
+                    constants.IMAGES: images,
+                    constants.TOTAL_IMAGES: total,
+                    constants.PAGE: page,
+                    constants.PER_PAGE: ITEMS_PER_PAGE,
+                    constants.TOTAL_PAGES: (total + ITEMS_PER_PAGE - 1
+                                            ) // ITEMS_PER_PAGE
                 }
         except psycopg.Error as e:
             logger.error(constants.FAIL_TO_FETCH_IMG.format(error=e))

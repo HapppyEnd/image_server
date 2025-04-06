@@ -24,6 +24,14 @@ ERROR_500 = 'Ошибка сервера'
 INVALID_PATH = "Invalid path: {path}"
 DELETE_FILE_ERROR = 'Failed to delete file {error}'
 DELETE_FILE_SUCCESS = 'File deleted successfully: {id}'
+PAGE_NOT_FOUND = 'Page not found'
+TOTAL_PAGES = 'total_pages'
+TOTAL_IMAGES  = 'total'
+IMAGES = 'images'
+PER_PAGE = 'per_page'
+PAGE = 'page'
+LAST_PAGE = 'last_page'
+MSG = 'message'
 
 # logs
 LOG_FORMAT = '{time:YYYY-MM-DD HH:mm:ss} {level}: {message}'

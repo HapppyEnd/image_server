@@ -56,18 +56,22 @@ async def get_all_images(request: web.Request) -> web.Response:
         web.Response: Response with JSON list of images.
         """
     logger.info(
-        constants.GET_REQUEST.format(request=request.query.get('page', 1)))
+        constants.GET_REQUEST.format(
+            request=request.query.get(constants.PAGE, 1)))
     try:
-        page = int(request.query.get('page', 1))
+        page = int(request.query.get(constants.PAGE, 1))
         images_data = await db.get_images(page)
-        logger.info(f'im_data {images_data}')
-        if images_data['total_pages'] < images_data['page'] and images_data['total_pages'] != 0:
-            last_page = images_data['total_pages']
-            return web.Response(status=404, text=json.dumps({
-                'last_page': last_page,
-                'message': 'Page not found',
-            }))
-        return web.Response(status=200, text=json.dumps(images_data),
+        if (images_data[constants.TOTAL_PAGES] < images_data[
+            constants.PAGE] and
+                images_data[constants.TOTAL_PAGES] != 0):
+            last_page = images_data[constants.TOTAL_PAGES]
+            return web.Response(status=constants.HTTP_404_NOT_FOUND,
+                                text=json.dumps({
+                                    constants.LAST_PAGE: last_page,
+                                    constants.MSG: constants.PAGE_NOT_FOUND,
+                                }))
+        return web.Response(status=constants.HTTP_200_OK,
+                            text=json.dumps(images_data),
                             content_type=constants.CONTENT_TYPE_JSON)
     except Exception as e:
         logger.error(constants.LOAD_IMAGE_GALLERY_ERROR.format(error=e))
@@ -167,7 +171,7 @@ async def delete_handler(request: web.Request) -> web.Response:
                 logger.error(constants.DELETE_FILE_ERROR.format(error=e))
 
             return web.Response(
-                status=200,
+                status=constants.HTTP_200_OK,
                 text=constants.DELETE_FILE_SUCCESS)
     except Exception as e:
         logger.error(constants.DELETE_FILE_ERROR.format(error=e))
