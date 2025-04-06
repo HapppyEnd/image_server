@@ -139,6 +139,14 @@ const card = (item) => {
     const textContainer = document.createElement('div');
     textContainer.className = 'textContainer';
 
+    const name = document.createElement('div');
+    name.className = 'size cardText';
+    name.innerText = `Имя: ${item.original_name.split('.')[0]}`;
+
+    const type = document.createElement('div');
+    type.className = 'size cardText';
+    type.innerText = `Тип: ${item.file_type}`;
+
     const size = document.createElement('div');
     size.className = 'size cardText';
     size.innerText = `Размер: ${item.size_kb}Кб`;
@@ -170,6 +178,8 @@ const card = (item) => {
     btn.innerHTML = im;
     btn.className = "submit"
 
+    textContainer.appendChild(name);
+    textContainer.appendChild(type);
     textContainer.appendChild(size);
     textContainer.appendChild(date);
     buttonContainer.appendChild(link);
