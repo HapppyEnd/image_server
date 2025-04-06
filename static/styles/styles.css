@@ -99,7 +99,6 @@ a {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    /*border: 2px solid transparent;*/
     border-radius: 4px;
     z-index: -1;
 }
@@ -182,7 +181,6 @@ a {
     padding: 0 4px;
 }
 
-/* Опционально: разные стили для кнопок навигации */
 .pagination-first,
 .pagination-last {
     font-weight: bold;

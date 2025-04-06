@@ -17,7 +17,7 @@ const handleDelete = (id) => {
     });
 }
 
-// Основная функция загрузки изображений
+// Main function to load images
 async function fetchImages(page = 1) {
     try {
         const response = await fetch(`/api/images?page=${page}`);
@@ -48,11 +48,11 @@ async function fetchImages(page = 1) {
     }
 }
 
-// Функция рендеринга пагинации с иконками
+// Rendering pagination
 function renderPagination(currentPage, totalPages) {
     paginationContainer.innerHTML = '';
 
-    // Первая страница
+    // First page
     if (currentPage > 1) {
         const firstBtn = createPaginationButton('<<', () => fetchImages(1));
         firstBtn.className = 'pagination-first';
@@ -60,7 +60,7 @@ function renderPagination(currentPage, totalPages) {
         paginationContainer.appendChild(firstBtn);
     }
 
-    // Предыдущая страница
+    // Previous page
     if (currentPage > 1) {
         const prevBtn = createPaginationButton('<', () => fetchImages(currentPage - 1));
         prevBtn.className = 'pagination-prev';
@@ -68,7 +68,7 @@ function renderPagination(currentPage, totalPages) {
         paginationContainer.appendChild(prevBtn);
     }
 
-    // Текущая страница и ближайшие
+    // Current page and nearest
     const startPage = Math.max(1, currentPage - 1);
     const endPage = Math.min(totalPages, currentPage + 1);
 
@@ -95,7 +95,7 @@ function renderPagination(currentPage, totalPages) {
         paginationContainer.appendChild(dots);
     }
 
-    // Следующая страница
+    // Next page
     if (currentPage < totalPages) {
         const nextBtn = createPaginationButton('>', () => fetchImages(currentPage + 1));
         nextBtn.className = 'pagination-next';
@@ -103,7 +103,7 @@ function renderPagination(currentPage, totalPages) {
         paginationContainer.appendChild(nextBtn);
     }
 
-    // Последняя страница
+    // Last page
     if (currentPage < totalPages) {
         const lastBtn = createPaginationButton('>>', () => fetchImages(totalPages));
         lastBtn.className = 'pagination-last';
@@ -112,7 +112,7 @@ function renderPagination(currentPage, totalPages) {
     }
 }
 
-// Вспомогательная функция для создания кнопок
+// Create buttons
 function createPaginationButton(text, onClick) {
     const button = document.createElement('button');
     button.innerHTML = text;
@@ -120,7 +120,7 @@ function createPaginationButton(text, onClick) {
     return button;
 }
 
-// Функция создания карточки (без изменений)
+// Create card
 const card = (item) => {
     const card = document.createElement('div');
     card.className = 'card';
@@ -193,7 +193,7 @@ const card = (item) => {
     return card;
 };
 
-// Инициализация
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const page = parseInt(urlParams.get('page')) || 1;
