@@ -21,9 +21,26 @@ db = Database()
 
 
 async def init_db(app: web.Application):
-    logger.info(constants.DB_CONNECT.format(db=constants.DATABASE_URL))
-    await db.connect()
-    await db.init_db()
+    """Initialize database connection and tables.
+
+       Args:
+           app: aiohttp application instance
+       Raises:
+           ConnectionError: If database connection fails
+           RuntimeError: If table initialization fails
+       """
+    try:
+        logger.info(constants.DB_CONNECT.format(db=constants.DB_NAME))
+        await db.connect()
+        await db.init_db()
+    except ConnectionError as e:
+        logger.critical(constants.ERROR_DB_CONNECTION.format(error=e))
+        raise ConnectionError(
+            constants.ERROR_DB_CONNECTION.format(error=e)) from e
+    except RuntimeError as e:
+        logger.critical(constants.ERROR_DB_INITIALIZE.format(error=e))
+        raise RuntimeError(
+            constants.ERROR_DB_INITIALIZE.format(error=e)) from e
 
 
 @routes.get('/')

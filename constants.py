@@ -66,7 +66,7 @@ APP_PORT = int(os.getenv('APP_PORT'))
 BASE_URL = os.getenv('BASE_URL')
 MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE'))
 DATABASE_URL = os.getenv('DATABASE_URL')
-
+DB_NAME = os.getenv('POSTGRES_DB')
 # Requests
 GET_REQUEST = 'GET: {request}'
 POST_REQUEST = 'POST: {request}'
@@ -79,6 +79,7 @@ DB_POOL_MIN_SIZE = 1
 DB_POOL_MAX_SIZE = 10
 
 ERROR_DB_CONNECTION = 'Database connection error {error}'
+ERROR_DB_INITIALIZE  = 'Database initialization error {error}'
 ERROR_DB_OPERATION = 'Database operation failed {error}'
 DB_POOL_SUCCESS = 'Database pool created successfully'
 DB_POOL_CLOSE_SUCCESS = 'Database pool closed successfully'
