@@ -75,15 +75,60 @@ a {
     padding: 8px 32px;
     font-size: 16px;
     color: white;
-    min-height: 40px;
+    min-height: 44px;
     border-radius: 4px;
     border: 2px solid white;
+    transition: all 0.3s ease;
+    overflow: hidden;
+
 }
 
 .btn {
     font-size: 16px;
     margin-top: 24px;
 }
+
+.submit:hover {
+    animation: border-spin 2s linear infinite;
+}
+
+.submit::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    /*border: 2px solid transparent;*/
+    border-radius: 4px;
+    z-index: -1;
+}
+
+.submit:hover::before {
+    animation: border-spin 1.5s linear infinite;
+}
+
+@keyframes border-spin {
+    0% {
+        border-left-color: white;
+    }
+    25% {
+        border-top-color: red;
+    }
+    50% {
+        border-right-color: red;
+    }
+    75% {
+        border-bottom-color: red;
+    }
+    87% {
+        border-left-color: red;
+    }
+    100% {
+        border-left-color: white;
+    }
+}
+
 
 #responseMessage a {
     color: black;
@@ -95,7 +140,7 @@ a {
         width: 500px;
     }
 }
-/* Стили пагинации */
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -125,9 +170,9 @@ a {
 }
 
 .pagination button.active {
-    background: #007bff;
+    background: linear-gradient(90deg, #be1b86, #2b306c);
     color: white;
-    border-color: #007bff;
+    border-color: white;
     font-weight: bold;
 }
 

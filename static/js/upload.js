@@ -48,6 +48,7 @@ document.getElementById('uploadForm')
             const response = await fetch('/upload', {
                 method: 'POST', body: formData
             });
+            event.target.reset()
 
             if (response.ok) {
                 const data = await response.json();

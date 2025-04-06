@@ -60,6 +60,13 @@ async def get_all_images(request: web.Request) -> web.Response:
     try:
         page = int(request.query.get('page', 1))
         images_data = await db.get_images(page)
+        logger.info(f'im_data {images_data}')
+        if images_data['total_pages'] < images_data['page'] and images_data['total_pages'] != 0:
+            last_page = images_data['total_pages']
+            return web.Response(status=404, text=json.dumps({
+                'last_page': last_page,
+                'message': 'Page not found',
+            }))
         return web.Response(status=200, text=json.dumps(images_data),
                             content_type=constants.CONTENT_TYPE_JSON)
     except Exception as e:
