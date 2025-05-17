@@ -48,8 +48,8 @@
     POSTGRES_USER=app_user
     POSTGRES_PASSWORD=secure_password_123
     POSTGRES_DB=image_db
-    DATABASE_URL=postgresql+asyncpg://app_user:secure_password_123@db:5432/image_db
-    
+    DATABASE_URL='host=db port=5432 dbname=image_db user=app_user password=secure_password_123'
+
     # Security
     SECRET_KEY=your_very_secret_key_here
     DEBUG=False  # В production установите False
