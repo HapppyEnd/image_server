@@ -3,18 +3,12 @@ from typing import Any, Optional
 
 import psycopg
 from loguru import logger
-from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
+
 import constants
 from constants import ITEMS_PER_PAGE
-from queries import (
-    CREATE_TABLE,
-    INSERT_IMAGE,
-    GET_IMAGES,
-    COUNT_IMAGES,
-    FIND_BY_ID,
-    DELETE_BY_ID
-)
+from queries import (COUNT_IMAGES, CREATE_TABLE, DELETE_BY_ID, FIND_BY_ID,
+                     GET_IMAGES, INSERT_IMAGE)
 
 log_file = os.path.join('logs', constants.LOG_FILE)
 logger.add(log_file, format=constants.LOG_FORMAT, level=constants.LOG_LEVEL)

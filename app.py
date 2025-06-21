@@ -172,6 +172,16 @@ async def post_handler(request: web.Request) -> web.Response:
 
 @routes.delete('/api/images/{id}')
 async def delete_handler(request: web.Request) -> web.Response:
+    """Delete image by ID from DB and filesystem.
+
+        Args:
+            request: Contains image ID in match_info['id']
+        Returns:
+            Response with status:
+            - 200: Success
+            - 404: Image not found
+            - 500: Server error
+        """
     try:
         image_id = request.match_info['id']
         success, filename = await db.delete_image(image_id)
